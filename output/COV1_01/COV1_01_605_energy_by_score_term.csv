@@ -1,0 +1,6 @@
+score_type,score
+ScoreType.fa_elec_rna_phos_phos,0.0834741860292656
+ScoreType.rna_torsion,0.5188732173304546
+ScoreType.fa_stack,-11.91104841981319
+ScoreType.rna_sugar_close,0.24052389383804754
+ScoreType.hbond_sr_bb_sc,0.0
