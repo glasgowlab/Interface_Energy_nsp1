@@ -1,7 +1,7 @@
-Interface Energy: Take two list of residues alongisde its PDB chain to compare the two faces: 1) it finds residue total energy of all residues saves, it find the short range interface energy defined by rosetta and it defines critical residues based on a score threshold and it breaks down the desire score types 
+Interface Analysis: Finds Residues within 8 Å of a target chain, scores them using the Rosetta Score Function, and output per residue energy breakdown by residue type and total energy, interface energy, and total chain energy as csv files. 
 
 -----------------------------------------------------------------------------------------------------
-**Input Flags for InterfaceEnergy_Run.py:**:
+**Input Flags for InterfaceAnalysis_Run.py:**:
 ```
     parser.add_argument("--pdb_path", type=str, default="", help="Path to pdb file; .../.../.../inputs/pdb_file.pdb") <br>
     parser.add_argument("--output_dir", type=str, default="", help="Path to output directory; .../.../.../project/outputs")  <br>
