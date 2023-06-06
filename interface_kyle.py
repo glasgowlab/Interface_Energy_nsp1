@@ -1,4 +1,4 @@
-import multiprocessing
+
 import subprocess
 
 import pyrosetta
@@ -6,25 +6,6 @@ import os
 from subprocess import Popen, PIPE
 
 
-def make_chunks(data: list, thread_count) -> dict:
-    """
-    Takes a list and splits it into parts based on the thread count
-    :param data: a list that needs to be split up amongst the threads
-    :param thread_count: the number of threads to use
-    :return: None
-    """
-    threads = {}
-
-    for x in range(0, thread_count):
-        threads[x] = []
-
-    thread = 0
-    for x in range(0, len(data)):
-        threads[thread].append(data[x])
-        thread += 1
-        if thread == thread_count:
-            thread = 0
-    return threads
 
 
 def makeFaceFiles(pose: pyrosetta.Pose, faceA: pyrosetta.rosetta.core.select.residue_selector.ResidueSelector,
@@ -95,11 +76,11 @@ def makeResidueSelectors(pose: pyrosetta.Pose, chain1: str, chain2: str, radius:
 
 
 
-def runScript( thread_num : int,chain1 : str, chain2: str, radius: float,pdb: os.path):
+def runScript( chain1 : str, chain2: str, radius: float,pdb: os.path):
 
     pose: pyrosetta.Pose = pyrosetta.pose_from_pdb(pdb)
-    faceAOutputPath: str = "FaceFiles/chainA_" + str(thread_num) + ".txt"
-    faceBOutputPath = "FaceFiles/chainB_" + str(thread_num) + ".txt"
+    faceAOutputPath: str = "FaceFiles/chainA_"+ ".txt"
+    faceBOutputPath = "FaceFiles/chainB_"  + ".txt"
     residues = makeResidueSelectors(pose, chain1, chain2, radius)
     try:
         makeFaceFiles(pose, residues[0], residues[1], faceAOutputPath, faceBOutputPath)

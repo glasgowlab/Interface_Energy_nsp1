@@ -10,6 +10,11 @@ import interface_kyle
 
 
 def make_dir(dir_path: os.path) -> None:
+    '''
+    Creates directory
+    :param dir_path: path to directory
+    :return:  None
+    '''
     if not os.path.isdir(dir_path):
         if not os.path.isfile(dir_path):
             os.makedirs(dir_path)
@@ -18,6 +23,8 @@ def make_dir(dir_path: os.path) -> None:
 
 
 def main(args):
+    make_dir(args.output_path)
+    make_dir("FaceFiles")
     pose: pyrosetta.Pose = pyrosetta.pose_from_pdb(args.pdb_path)
     target_chain_id = pyrosetta.rosetta.core.pose.get_chain_id_from_chain(str(args.target_chain), pose)
     target_and_target_neighbor_selector = pyrosetta.rosetta.core.select.residue_selector.NeighborhoodResidueSelector()
@@ -45,12 +52,12 @@ def main(args):
             neighbor_chains.append(chain)
     interface_energies = []
     for c in neighbor_chains:
-        interface_energies.append(interface_kyle.runScript(0, args.target_chain, c, 8, args.pdb_path))
+        interface_energies.append(str(interface_kyle.runScript( args.target_chain, c, 8, args.pdb_path)))
 
     neighbor_chains.append("total score")
     score_fxn.score(pose)
-    interface_energies.append(energy_methods.get_chain_energy(pose, pyrosetta.rosetta.core.pose.get_chain_id_from_chain
-    (args.target_chain, pose)))
+    interface_energies.append(str(energy_methods.get_chain_energy(pose, pyrosetta.rosetta.core.pose.get_chain_id_from_chain
+    (args.target_chain, pose))))
 
     data_frame = pd.DataFrame(residue_energies)
     data_frame.index = residue_number_row
@@ -65,7 +72,7 @@ def main(args):
     with open(
             os.path.join(containing_folder, "chain_and_total_energy" + "_" + file_name + ".csv"),'w') as writting_file:
         writting_file.write(",".join(neighbor_chains) + "\n")
-        writting_file.write(",".join(interface_energies))
+        writting_file.write(",".join(interface_energies)+"\n")
         writting_file.close()
 
     return 0
@@ -84,9 +91,6 @@ if __name__ == "__main__":
                         help="Rosetta score function types. Default; fa_elec_rna_phos_phos rna_torsion fa_stack "
                              "rna_sugar_close hbond_sr_bb_sc")
     pyrosetta.init('-mute all')
-    for file in os.listdir("inputs"):
-        args = parser.parse_args()
-        setattr(args, "pdb_path", os.path.join("inputs", file))
-        setattr(args, "output_dir", "output")
-        main(args)
+    args = parser.parse_args()
+    main(args)
 
