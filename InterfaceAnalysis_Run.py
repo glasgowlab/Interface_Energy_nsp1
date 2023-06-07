@@ -6,7 +6,7 @@ import energy_methods
 import os
 import pandas as pd
 
-import interface_kyle
+import interface_scorer
 
 
 def make_dir(dir_path: os.path) -> None:
@@ -23,7 +23,7 @@ def make_dir(dir_path: os.path) -> None:
 
 
 def main(args):
-    make_dir(args.output_path)
+    make_dir(args.output_dir)
     make_dir("FaceFiles")
     pose: pyrosetta.Pose = pyrosetta.pose_from_pdb(args.pdb_path)
     target_chain_id = pyrosetta.rosetta.core.pose.get_chain_id_from_chain(str(args.target_chain), pose)
@@ -51,10 +51,18 @@ def main(args):
         if chain not in neighbor_chains and chain != args.target_chain:
             neighbor_chains.append(chain)
     interface_energies = []
+    total_interface_score = 0
     for c in neighbor_chains:
-        interface_energies.append(str(interface_kyle.runScript( args.target_chain, c, 8, args.pdb_path)))
+        score = (interface_scorer.runScript( args.target_chain, c, 8, args.pdb_path))
+        if score == 9999999:
+            neighbor_chains.remove(c)
+            continue
+        interface_energies.append(str(score))
+        total_interface_score += score
 
+    interface_energies.append(str(total_interface_score))
     neighbor_chains.append("total score")
+    neighbor_chains.append("total interface score ")
     score_fxn.score(pose)
     interface_energies.append(str(energy_methods.get_chain_energy(pose, pyrosetta.rosetta.core.pose.get_chain_id_from_chain
     (args.target_chain, pose))))
@@ -70,7 +78,7 @@ def main(args):
     make_dir(os.path.join(containing_folder))
     data_frame.to_csv(os.path.join(containing_folder, "per_residue_per_score_type_energies" + "_" + file_name + ".csv"))
     with open(
-            os.path.join(containing_folder, "chain_and_total_energy" + "_" + file_name + ".csv"),'w') as writting_file:
+            os.path.join(containing_folder, "chain_interface_and_chain_total_score" + "_" + file_name + ".csv"),'w') as writting_file:
         writting_file.write(",".join(neighbor_chains) + "\n")
         writting_file.write(",".join(interface_energies)+"\n")
         writting_file.close()
@@ -92,5 +100,8 @@ if __name__ == "__main__":
                              "rna_sugar_close hbond_sr_bb_sc")
     pyrosetta.init('-mute all')
     args = parser.parse_args()
-    main(args)
+    for file in os.listdir("inputs"):
+        setattr(args,"pdb_path", os.path.join("inputs", file))
+        setattr(args,"output_dir", "outputs")
+        main(args)
 

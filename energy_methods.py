@@ -32,10 +32,15 @@ def residue_energies_by_residue_type_list(pose: pyrosetta.Pose, score_fxn: pyros
     eng: pyrosetta.rosetta.core.scoring.Energies = working_pose.energies()
     energies_dict = {}
     score_type_list = score_type.split(" ")
+
     if "total_score" not in score_type_list:
         score_type_list.append("total_score")
+    total_score_types = 0
     for score_type_name in score_type_list:
         energy_type = pyrosetta.rosetta.core.scoring.score_type_from_name(score_type_name)
-        energies_dict[score_type_name] = eng.residue_total_energies(rosetta_index)[energy_type]
+        score = eng.residue_total_energies(rosetta_index)[energy_type]
+        energies_dict[score_type_name] = score
+        total_score_types += score
+    energies_dict["total_score_types"] = total_score_types
     return energies_dict
 
