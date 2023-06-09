@@ -1,3 +1,5 @@
+See the computational methods document in this repository for expanded detailed homology modeling + analysis methods.
+
 Interface Analysis: Finds Residues within 8 Å of a target chain, scores them using the Rosetta Score Function, and output per residue energy breakdown by residue type and total energy, interface energy, and total chain energy as csv files. 
 
 Inputs: 
